@@ -1,0 +1,181 @@
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Georgia', serif;
+  background-color: #f5f0e6; /* Soft beige background */
+}
+
+h1 {
+  text-align: center;
+  color: #5d4037; /* Deep brown */
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #8d6e63, #a1887f); /* Light to medium brown gradient */
+  border-radius: 2px;
+}
+
+.algo-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.algo-selector button {
+  padding: 12px 24px;
+  background: #a1887f; /* Muted brown */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.algo-selector button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  background: #8d6e63; /* Darker brown on hover */
+}
+
+.algo-selector button.active {
+  background: #6d4c41; /* Dark brown for active */
+  transform: scale(1.05);
+}
+
+.algo-details {
+  background-color: #fff8f0; /* Warm beige */
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d7ccc8; /* Light brown border */
+}
+
+.algo-details:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.algo-details h2 {
+  color: #5d4037; /* Deep brown */
+  border-bottom: 2px solid #bcaaa4; /* Light brown */
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.algo-details h3, .algo-details h4 {
+  color: #4e342e; /* Dark brown */
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 20px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  border: 1px solid #d7ccc8; /* Light brown */
+}
+
+th {
+  background: #8d6e63; /* Medium brown */
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #efebe9; /* Very light brown */
+}
+
+tr:hover {
+  background-color: #e0d5d0; /* Light warm gray */
+}
+
+tfoot td {
+  font-weight: bold;
+  background-color: #d7ccc8; /* Light brown */
+}
+
+/* Accent colors */
+.advantages {
+  border-left: 4px solid #81c784; /* Soft green */
+}
+
+.disadvantages {
+  border-left: 4px solid #e57373; /* Soft red */
+}
+
+.advantages-disadvantages > div {
+  background-color: #fff8f0; /* Warm beige */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  padding-left: 20px;
+  list-style-type: none;
+}
+
+ul li {
+  padding: 8px 0;
+  position: relative;
+  padding-left: 25px;
+}
+
+ul li::before {
+  content: '•';
+  color: #9575cd; /* Soft purple */
+  font-size: 1.5rem;
+  position: absolute;
+  left: 0;
+  top: 2px;
+}
+
+.abbreviations p {
+  margin: 5px 0;
+  background-color: #ffe0b2; /* Light yellow */
+  padding: 8px 15px;
+  border-radius: 20px;
+  color: #5d4037; /* Deep brown */
+  display: inline-block;
+}
+
+/* Special accent elements */
+.special {
+  background-color: #f8bbd0; /* Soft pink */
+  color: #5d4037;
+}
+
+.highlight {
+  background-color: #fff176; /* Soft yellow */
+  color: #5d4037;
+}
+
+.note {
+  background-color: #ce93d8; /* Light purple */
+  color: #5d4037;
+}
