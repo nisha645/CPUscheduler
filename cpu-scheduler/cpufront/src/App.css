@@ -30,15 +30,15 @@ body.light {
 body.dark {
   background: linear-gradient(135deg, #2A3439, #1A1E22);
   color: #e0e0e0;
-  --primary: #414A4C; /* Outer Space */
+  --primary: #39616a; /* Outer Space */
   --secondary: #242124; /* Raisin Black */
   --accent: #8C4356; /* Murrey */
   --neutral: #893F45; /* Cordovan */
   --text: #e0e0e0;
-  --text-light: #b0b0b0;
+  --text-light: #8C4356;
   --bg: #1A1E22;
   --card-bg: rgba(30, 30, 30, 0.9);
-  --border: rgba(255, 255, 255, 0.1);
+  --border: rgba(86, 52, 52, 0.1);
 }
 
 /* Smooth transition for theme switching */
@@ -485,7 +485,7 @@ tr:hover {
   color: white;
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  padding: 0 10px;
+  padding: 0 1px;
   min-width: 40px;
   width: auto;
   animation: fadeIn 0.6s ease forwards;
@@ -509,7 +509,7 @@ tr:hover {
 .gantt-block .time {
   position: absolute;
   bottom: -22px;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   color: var(--text);
   left: 50%;
   transform: translateX(-50%);
@@ -540,7 +540,7 @@ tr:hover {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 5px;
+  border-width: 0.1 px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
 }
@@ -589,25 +589,6 @@ tr:hover {
   background: var(--primary);
   border-radius: 1px;
 }
-
-/* Gantt Colors with theme-appropriate variations */
-.gantt-block:nth-child(1) { background-color: #D99058; } /* Persian orange */
-.gantt-block:nth-child(2) { background-color: #9F8170; } /* Beaver */
-.gantt-block:nth-child(3) { background-color: #E6AF6B; }
-.gantt-block:nth-child(4) { background-color: #D9B58B; }
-.gantt-block:nth-child(5) { background-color: #A67C52; }
-.gantt-block:nth-child(6) { background-color: #8C4356; } /* Murrey */
-.gantt-block:nth-child(7) { background-color: #893F45; } /* Cordovan */
-.gantt-block:nth-child(8) { background-color: #6B4E3D; }
-
-body.dark .gantt-block:nth-child(1) { background-color: #414A4C; } /* Outer Space */
-body.dark .gantt-block:nth-child(2) { background-color: #8C4356; } /* Murrey */
-body.dark .gantt-block:nth-child(3) { background-color: #6B4E3D; }
-body.dark .gantt-block:nth-child(4) { background-color: #893F45; } /* Cordovan */
-body.dark .gantt-block:nth-child(5) { background-color: #5A6A62; }
-body.dark .gantt-block:nth-child(6) { background-color: #3D2B1F; } /* Bistre */
-body.dark .gantt-block:nth-child(7) { background-color: #2D1E14; } /* Black bean */
-body.dark .gantt-block:nth-child(8) { background-color: #242124; } /* Raisin Black */
 
 .gantt-block.idle {
   background-color: #949191 !important;
@@ -662,7 +643,7 @@ body.dark .gantt-block.idle {
   
   .gantt-block .time {
     bottom: -20px;
-    font-size: 0.7rem;
+
   }
   
   .averages {
@@ -712,20 +693,27 @@ body.dark .gantt-block.idle {
   font-size: 1.5rem;
 }
 .gantt-container {
-  background: white;
+  background: linear-gradient(135deg, #fbc18e,#747270);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin: 10px 10px;
+  margin: 10px;
   overflow-x: auto;
+  gap: 0;
+
 }
 
+
 .gantt-chart {
-  display: flex;
+  display: inline-flex;         
+  justify-content: flex-start;  
+  align-items: stretch;
   height: 70px;
   position: relative;
   margin-bottom: 28px;
+  gap: 0;                       
 }
+
 
 .gantt-block {
   height: 100%;
@@ -735,13 +723,17 @@ body.dark .gantt-block.idle {
   justify-content: center;
   color: white;
   font-weight: bold;
-  border-right: 2px solid white;
   min-width: 20px;
+  position: relative;
+  flex: 0 0 auto;
+  gap: 0;                
 }
 
+
 .gantt-block.idle {
-  background-color: #95a5a6;
-  color: #333;
+  background-color: #899b9d;
+  color: #120101;
+  gap: 0;
 }
 
 .block-label {
@@ -750,15 +742,16 @@ body.dark .gantt-block.idle {
 }
 
 .block-time {
-  font-size: 0.9em;
+  font-size: 0.8em;
   opacity: 0.9;
 }
+
 
 .timeline {
   position: relative;
   height: 20px;
   margin: 10px 9px;
-  border-top: 2px solid #666;
+  border-top: 3px solid #090101;
   
 }
 
@@ -766,9 +759,8 @@ body.dark .gantt-block.idle {
   position: absolute;
   top: -30px;
   transform: translateX(-50%);
-  font-size: 0.9em;
-  
-  color: #666;
+  font-size: 6 em;
+  color: #100d0d;
   white-space: nowrap;
   
 }
@@ -780,7 +772,7 @@ body.dark .gantt-block.idle {
   left: 50%;
   width: 1px;
   height: 15px;
-  background: #666;
+  background: #1b0101;
 }
 
 .export-buttons {
@@ -809,4 +801,85 @@ body.dark .gantt-block.idle {
   margin: 10px 0;
   border: 1px solid #e74c3c;
   border-radius: 4px;
+}
+
+.navbar,.algo-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--nav-bg);
+  padding: 12px 24px;
+  box-shadow: 0 2px 8px var(--border);
+  font-family: 'Segoe UI', sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-button {
+  background: transparent;
+  border: 2px solid transparent;
+  padding: 10px 18px;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--nav-text);
+  border-radius: 10px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-button.active {
+  background-color: var(--nav-active-bg);
+  color: #fff;
+  border-color: var(--nav-active-bg);
+}
+
+.nav-button:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Theme Toggle Button */
+.navbar > button:last-child {
+  padding: 8px 14px;
+  font-size: 14px;
+  background-color: var(--theme-toggle-bg);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navbar > button:last-child:hover {
+  opacity: 0.9;
+}
+
+.navbar > button:last-child {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: var(--theme-toggle-bg, #333);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+
+body.light {
+  --nav-bg: #f0f0f0;
+  --nav-text: #333;
+  --nav-active-bg: #cb8854;
+  --theme-toggle-bg: #9F8170;
+}
+
+body.dark {
+  --nav-bg: #222;
+  --nav-text: #eee;
+  --nav-active-bg: #6c3342; 
+  --theme-toggle-bg:  #893F45;
 }

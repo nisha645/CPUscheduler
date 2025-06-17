@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AlgorithmComparison from "./AlgorithmComparison";
 
 const Scheduler = () => {
   const [algorithm, setAlgorithm] = useState("FCFS");
@@ -10,7 +11,8 @@ const Scheduler = () => {
   const [priority, setPriority] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const scale = 60; // Increased scale for better visibility
+
+  const scale = 50; // Increased scale for visibility
 
   const addProcess = () => {
     if (!pid || arrival === "" || burst === "") {
@@ -28,7 +30,9 @@ const Scheduler = () => {
       arrival_time: Number(arrival),
       burst_time: Number(burst),
       priority: Number(priority) || 0,
+
     };
+
     setProcesses([...processes, newProcess]);
     setPid("");
     setArrival("");
@@ -65,6 +69,7 @@ const Scheduler = () => {
     });
 
     const data = await response.json();
+
     if (data.error) {
       setError(data.error);
     } else {
@@ -88,18 +93,15 @@ const Scheduler = () => {
     ).toFixed(2);
 
   const getColorForPid = (pid) => {
-    const colors = [
-      "#0074D9",
-      "#FF851B",
-      "#2ECC40",
-      "#B10DC9",
-      "#FF4136",
-      "#39CCCC",
-      "#FFDC00",
-      "#85144b",
-      "#3D9970",
-      "#7FDBFF",
-    ];
+const colors = [
+  "#F4A261", "#2A9D8F",  "#FF9F1C","#E76F51", "#264653","#06D6A0","#8D6E63",
+   "#3D2B1F", "#C0A98E", "#6D6875", "#B5838D" ,
+  "#4ECDC4", "#FF6B6B", "#FFD166",  "#118AB2", 
+   "#EF476F", "#8338EC", "#F72585", "#3A86FF"  
+
+];
+
+
     const index = parseInt(pid, 10) % colors.length;
     return colors[index];
   };
@@ -107,8 +109,10 @@ const Scheduler = () => {
   const exportProcessesToCSV = () => {
     const csvContent = [
       ["PID", "Arrival Time", "Burst Time", "Priority"],
-      ...processes.map(p => [p.pid, p.arrival_time, p.burst_time, p.priority])
-    ].map(e => e.join(",")).join("\n");
+      ...processes.map((p) => [p.pid, p.arrival_time, p.burst_time, p.priority === 0 ? "None" : p.priority]),
+    ]
+      .map((e) => e.join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -120,18 +124,21 @@ const Scheduler = () => {
 
   const exportResultsToCSV = () => {
     if (!result) return;
-    
+
     const csvContent = [
+      ["Algorithm used is : " +algorithm],
       ["PID", "Arrival", "Burst", "Completion", "Turnaround", "Waiting"],
-      ...result.metrics.map(m => [
+      ...result.metrics.map((m) => [
         m.pid,
         m.arrival_time,
         m.burst_time,
         m.completion_time,
         m.turnaround_time,
-        m.waiting_time
-      ])
-    ].map(e => e.join(",")).join("\n");
+        m.waiting_time,
+      ]),
+    ]
+      .map((e) => e.join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -141,74 +148,84 @@ const Scheduler = () => {
     a.click();
   };
 
-  const renderGanttChart = () => {
-    if (!result?.gantt) return null;
+const renderGanttChart = () => {
+  if (!result?.gantt) return null;
 
-    let currentTime = 0;
-    const timeMarkers = new Set();
+  const sortedGantt = [...result.gantt].sort((a, b) => a.start - b.start);
+  const blocks = [];
+  const timeMarkers = new Set();
+  let currentTime = 0;
 
-    return (
-      <div className="gantt-container">
-        <div className="gantt-chart">
-          {result.gantt.flatMap((block, index) => {
-            const elements = [];
-            
-            // Add idle time block
-            if (block.start > currentTime) {
-              const idleDuration = block.start - currentTime;
-              elements.push(
-                <div
-                  key={`idle-${index}`}
-                  className="gantt-block idle"
-                  style={{ width: `${idleDuration * scale}px` }}
-                >
-                  <div className="block-label">IDLE</div>
-                  <div className="block-time">{currentTime}-{block.start}</div>
-                </div>
-              );
-              timeMarkers.add(currentTime);
-              timeMarkers.add(block.start);
-            }
+  sortedGantt.forEach((block, index) => {
+    const { pid, start, end } = block;
+    const duration = end - start;
+    const isIdle = pid === "idle" || pid === null;
 
-            // Add process block
-            const duration = block.end - block.start;
-            elements.push(
-              <div
-                key={`process-${index}`}
-                className="gantt-block"
-                style={{
-                  width: `${duration * scale}px`,
-                  backgroundColor: getColorForPid(block.pid),
-                }}
-              >
-                <div className="block-label">P{block.pid}</div>
-                <div className="block-time">{block.start}-{block.end}</div>
-              </div>
-            );
-
-            timeMarkers.add(block.end);
-            currentTime = block.end;
-            return elements;
-          })}
+    // Insert idle time if there's a gap before this block
+    if (start > currentTime) {
+      blocks.push(
+        <div
+          key={`idle-${index}`}
+          className="gantt-block idle"
+          style={{
+            width: `${(start - currentTime) * scale}px`,
+            backgroundColor: "#ccc",
+          }}
+        >
+          <div className="block-label">IDLE</div>
+          <div className="block-time">
+            {currentTime} - {start}
+          </div>
         </div>
+      );
+      timeMarkers.add(currentTime);
+      timeMarkers.add(start);
+      currentTime = start;
+    }
 
-        {/* Timeline markers */}
-        <div className="timeline">
-          {Array.from(timeMarkers)
-            .sort((a, b) => a - b)
-            .map(time => (
-              <div
-                key={time}
-                className="timeline-marker"
-                style={{ left: `${time * scale}px` }}
-              >
-                {time}
-              </div>
-            ))}
+    // Add the actual process block
+    blocks.push(
+      <div
+        key={`process-${index}`}
+        className={`gantt-block ${isIdle ? "idle" : ""}`}
+        style={{
+          width: `${duration * scale}px`,
+          backgroundColor: isIdle ? "#ccc" : getColorForPid(pid),
+        }}
+      >
+        <div className="block-label">{isIdle ? "IDLE" : `P${pid}`}</div>
+        <div className="block-time">
+          {start}-{end}
         </div>
       </div>
     );
-  };
+
+    timeMarkers.add(start);
+    timeMarkers.add(end);
+    currentTime = end;
+  });
+
+  return (
+    <div className="gantt-container">
+      <div className="gantt-chart">{blocks}</div>
+
+      {/* Timeline markers using your approach */}
+      <div className="timeline">
+        {Array.from(timeMarkers)
+          .sort((a, b) => a - b)
+          .map((time, i) => (
+            <div
+              key={i}
+              className="timeline-marker"
+              style={{ left: `${time * scale}px` }}
+            >
+              {time}
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+};
 
   return (
     <div className="scheduler-container">
@@ -217,10 +234,7 @@ const Scheduler = () => {
       <div className="controls">
         <label>
           Algorithm:
-          <select
-            value={algorithm}
-            onChange={(e) => setAlgorithm(e.target.value)}
-          >
+          <select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
             <option>FCFS</option>
             <option>SJF</option>
             <option>Priority</option>
@@ -243,51 +257,52 @@ const Scheduler = () => {
       </div>
 
       <div className="form-row">
-        <input
-          placeholder="PID"
-          value={pid}
-          onChange={(e) => setPid(e.target.value)}
-        />
+        <input placeholder="PID" value={pid} onChange={(e) => setPid(e.target.value)} />
         <input
           placeholder="Arrival"
-          value={arrival}
           type="number"
+          value={arrival}
           onChange={(e) => setArrival(e.target.value)}
         />
         <input
           placeholder="Burst"
-          value={burst}
           type="number"
+          value={burst}
           onChange={(e) => setBurst(e.target.value)}
         />
         <input
           placeholder="Priority (opt)"
-          value={priority}
           type="number"
+          value={priority}
           onChange={(e) => setPriority(e.target.value)}
         />
       </div>
 
       {error && <div className="error">{error}</div>}
 
-      <table>
-        <thead>
-          <tr>
-            <th>PROCESS</th>
-            <th>ARRIVAL TIME</th>
-            <th>BURST TIME</th>
-          </tr>
-        </thead>
-        <tbody>
-          {processes.map((p, i) => (
-            <tr key={i}>
-              <td>P{p.pid}</td>
-              <td>{p.arrival_time}</td>
-              <td>{p.burst_time}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <table>
+  <thead>
+    <tr>
+      <th>PROCESS</th>
+      <th>ARRIVAL TIME</th>
+      <th>BURST TIME</th>
+      {algorithm === "Priority" && <th>PRIORITY</th>}
+    </tr>
+  </thead>
+  <tbody>
+    {processes.map((p, i) => (
+      <tr key={i}>
+        <td>P{p.pid}</td>
+        <td>{p.arrival_time}</td>
+        <td>{p.burst_time}</td>
+        {algorithm === "Priority" && (
+          <td>{p.priority === 0 ? "None" : p.priority}</td>
+        )}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
       {result && (
         <>
@@ -331,6 +346,11 @@ const Scheduler = () => {
             {renderGanttChart()}
           </div>
         </>
+      )}
+
+      {/* ✅ Algorithm Comparison Section */}
+      {processes.length > 0 && (
+        <AlgorithmComparison processes={processes} quantum={quantum} />
       )}
     </div>
   );

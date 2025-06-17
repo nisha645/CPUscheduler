@@ -58,12 +58,30 @@ def fcfs(processes):
     gantt = []
     metrics = []
 
+    # Add initial IDLE block if the first process arrives after time 0
+    if processes[0]["arrival_time"] > 0:
+        idle_start = 0
+        idle_end = processes[0]["arrival_time"]
+        gantt.append({
+            "pid": "idle",
+            "start": idle_start,
+            "end": idle_end,
+            "duration": idle_end - idle_start
+        })
+        time = idle_end
+
     for p in processes:
         start = max(time, p["arrival_time"])
         end = start + p["burst_time"]
         time = end
 
-        gantt.append({"pid": p["pid"], "start": start, "end": end, "duration": p["burst_time"]})
+        gantt.append({
+            "pid": p["pid"],
+            "start": start,
+            "end": end,
+            "duration": p["burst_time"]
+        })
+
         metrics.append({
             "pid": p["pid"],
             "arrival_time": p["arrival_time"],
@@ -76,6 +94,7 @@ def fcfs(processes):
     return {"metrics": metrics, "gantt": gantt}
 
 
+
 def sjf(processes):
     processes = sorted(processes, key=lambda x: (x["arrival_time"], x["burst_time"]))
     time = 0
@@ -84,6 +103,7 @@ def sjf(processes):
     visited = [False] * n
     gantt = []
     metrics = []
+    idle_start = None
 
     while completed < n:
         idx = -1
@@ -95,9 +115,19 @@ def sjf(processes):
                 idx = i
 
         if idx == -1:
-            gantt.append({"pid": "idle", "start": time, "end": time + 1, "duration": 1})
+            if idle_start is None:
+                idle_start = time
             time += 1
             continue
+        else:
+            if idle_start is not None:
+                gantt.append({
+                    "pid": "idle",
+                    "start": idle_start,
+                    "end": time,
+                    "duration": time - idle_start
+                })
+                idle_start = None
 
         p = processes[idx]
         start = time
@@ -120,13 +150,27 @@ def sjf(processes):
 
 
 def priority(processes):
+    # Assign automatic priority if not given (None, '', 0, or negative)
+    current_priority = 30
+    for p in processes:
+        try:
+            if p["priority"]=="None" or p["priority"] <= 0:
+                p["priority"] = current_priority
+                current_priority += 1
+        except:
+            p["priority"] = current_priority
+            current_priority += 1
+
+    # Sort by arrival time and then priority
     processes = sorted(processes, key=lambda x: (x["arrival_time"], x["priority"]))
+
     time = 0
     completed = 0
     n = len(processes)
     visited = [False] * n
     gantt = []
     metrics = []
+    idle_start = None
 
     while completed < n:
         idx = -1
@@ -138,9 +182,19 @@ def priority(processes):
                 idx = i
 
         if idx == -1:
-            gantt.append({"pid": "idle", "start": time, "end": time + 1, "duration": 1})
+            if idle_start is None:
+                idle_start = time
             time += 1
             continue
+        else:
+            if idle_start is not None:
+                gantt.append({
+                    "pid": "idle",
+                    "start": idle_start,
+                    "end": time,
+                    "duration": time - idle_start
+                })
+                idle_start = None
 
         p = processes[idx]
         start = time
@@ -149,7 +203,13 @@ def priority(processes):
         visited[idx] = True
         completed += 1
 
-        gantt.append({"pid": p["pid"], "start": start, "end": end, "duration": p["burst_time"]})
+        gantt.append({
+            "pid": p["pid"],
+            "start": start,
+            "end": end,
+            "duration": p["burst_time"]
+        })
+
         metrics.append({
             "pid": p["pid"],
             "arrival_time": p["arrival_time"],
@@ -169,22 +229,44 @@ def round_robin(processes, quantum):
     metrics = []
     completed_pids = set()
     n = len(processes)
+
     remaining = {p["pid"]: p["burst_time"] for p in processes}
     arrival_map = {p["pid"]: p["arrival_time"] for p in processes}
     pid_map = {p["pid"]: p for p in processes}
+
     arrival_sorted = sorted(processes, key=lambda x: x["arrival_time"])
-    i = 0
+    i = 0  # Index for process arrivals
 
     while len(completed_pids) < n:
+
+        # Add newly arrived processes to queue
         while i < n and arrival_sorted[i]["arrival_time"] <= time:
             queue.append(arrival_sorted[i]["pid"])
             i += 1
 
+        # If no process is ready, system is idle
         if not queue:
-            gantt.append({"pid": "idle", "start": time, "end": time + 1, "duration": 1})
-            time += 1
+            # Determine next process arrival
+            next_arrival = arrival_sorted[i]["arrival_time"] if i < n else time + 1
+            idle_duration = next_arrival - time
+
+            gantt.append({
+                "pid": "idle",
+                "start": time,
+                "end": time + idle_duration,
+                "duration": idle_duration
+            })
+
+            time += idle_duration
+
+            # Add processes that arrive during idle time
+            while i < n and arrival_sorted[i]["arrival_time"] <= time:
+                queue.append(arrival_sorted[i]["pid"])
+                i += 1
+
             continue
 
+        # Get next process from queue
         pid = queue.pop(0)
         bt = remaining[pid]
         run_time = min(bt, quantum)
@@ -193,12 +275,19 @@ def round_robin(processes, quantum):
         time = end
         remaining[pid] -= run_time
 
-        gantt.append({"pid": pid, "start": start, "end": end, "duration": run_time})
+        gantt.append({
+            "pid": pid,
+            "start": start,
+            "end": end,
+            "duration": run_time
+        })
 
+        # Add processes that arrived during this execution
         while i < n and arrival_sorted[i]["arrival_time"] <= time:
             queue.append(arrival_sorted[i]["pid"])
             i += 1
 
+        # If the process is not finished, put it back in the queue
         if remaining[pid] > 0:
             queue.append(pid)
         else:
@@ -216,6 +305,7 @@ def round_robin(processes, quantum):
             })
             completed_pids.add(pid)
 
+    # Sort metrics by original process arrival order
     metrics.sort(key=lambda x: arrival_map[x["pid"]])
     return {"metrics": metrics, "gantt": gantt}
 
